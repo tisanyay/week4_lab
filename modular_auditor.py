@@ -19,9 +19,23 @@ def generate_report(units_processed, failed_entry_count):
     print("Total units processed:", units_processed)
     print("Number of failed/rejected entries:", failed_entry_count)
 
-def get_valid_input():
-    failed_entry_count = 0
-    command = input("Enter stock quantity or enter 'quit': \n")
+def get_valid_product_input(valid_product_dict):
+    valid_product_dict_lower = {k.lower():v for k, v in valid_product_dict.items()}
+    text_input = input("Enter Product Name: ").lower()
+
+    if text_input == "quit":
+        return 0, 0
+
+    if text_input not in valid_product_dict_lower:
+        print("Not a valid product!\n")
+        return get_valid_product_input(valid_product_dict_lower)
+
+    product_id = valid_product_dict_lower[text_input]
+    
+    return product_id, text_input
+
+def get_valid_stock_input():
+    command = input("Enter Quantity: ")
 
     if command == "quit":
         return 0
@@ -46,12 +60,22 @@ def calculate_tax(amount):
     return amount * 0.1
 
 def load_inventory(filename):
-    with open(filename, "w+") as f:
-        return json.load(f)
+    try:
+        with open(filename, "r") as f:
+            return json.load(f)
+    except FileNotFoundError as e:
+        return []
 
 def save_inventory(data, filename):
     with open(filename, "w+") as f:
-            data = json.dump(data, filename)
+            json.dump(data, f)
+
+def construct_item_dict(id, name, qty):
+    return {
+            "id": id,
+            "name": name,
+            "qty": qty
+            }
 
 
 inventory_file = "inventory.json"
@@ -60,29 +84,39 @@ failed_entry_count = 0
 inventory = 0
 revenue = 0
 price_per_qty = 10
- 
+valid_product_dict = {
+        "Laptop Stand": 1001, 
+        "Wireless Mouse": 1002,
+        "USB Cable": 1003,
+        "Keyboard": 1004
+        }
+
 print("SMART AUDITOR PROGRAM!!!!")
 
 data = load_inventory(inventory_file)
 
 while True:
-    user_input = get_valid_input()
- 
-    if not user_input:
+    product_id, user_product_input = get_valid_product_input(valid_product_dict)
+
+    if not user_product_input:
+        break
+
+    user_qty_input = get_valid_stock_input()
+
+    if not user_qty_input:
         break
     
-    if user_input == -1:
+    if user_qty_input == -1:
         failed_entry_count += 1
         continue
 
-    if is_over_stock_limit(inventory+user_input):
+    if is_over_stock_limit(inventory+user_qty_input):
         print("ALERT: ENTRY EXCEEDS STOCK INVENTORY\nEXITING...")
         break 
-    
-    inventory += user_input
-    raw_price = user_input * price_per_qty
-    taxed_price = calculate_tax(raw_price) + raw_price
-    revenue = process_delivery(revenue, taxed_price)
+     
+    data.append(construct_item_dict(product_id, user_product_input, user_qty_input))
+    print("\nNew Order Added:\n" + str(product_id) + ", " + user_product_input + ", " + str(user_qty_input)) 
 
+save_inventory(data, inventory_file)
 generate_report(inventory, failed_entry_count)
 print(revenue)
