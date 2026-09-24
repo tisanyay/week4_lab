@@ -1,3 +1,4 @@
+import json
 
 def is_positive(num):
     return int(num) > 0
@@ -44,6 +45,16 @@ def process_delivery(current_total, new_value):
 def calculate_tax(amount):
     return amount * 0.1
 
+def load_inventory(filename):
+    with open(filename, "w+") as f:
+        return json.load(f)
+
+def save_inventory(data, filename):
+    with open(filename, "w+") as f:
+            data = json.dump(data, filename)
+
+
+inventory_file = "inventory.json"
 STOCK_LIMIT = 500
 failed_entry_count = 0
 inventory = 0
@@ -51,6 +62,8 @@ revenue = 0
 price_per_qty = 10
  
 print("SMART AUDITOR PROGRAM!!!!")
+
+data = load_inventory(inventory_file)
 
 while True:
     user_input = get_valid_input()
