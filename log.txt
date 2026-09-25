@@ -1,0 +1,23 @@
+commit ea763e405f2f93f01d9a199cbedff22bac2d0573
+Author: tisanyay <brendentay@gmail.com>
+Date:   Fri Sep 25 10:49:27 2026 +0800
+
+    integrated functions into main program
+
+commit b13fbeffa0a1b174635da1218f49c5826fb24bca
+Author: tisanyay <brendentay@gmail.com>
+Date:   Fri Sep 25 00:52:46 2026 +0800
+
+    added user product input
+
+commit 705e881a2fa15cfb97f6a576e40ca5124d85409d
+Author: tisanyay <brendentay@gmail.com>
+Date:   Fri Sep 25 00:01:26 2026 +0800
+
+    added load_inventory and save_inventory function
+
+commit e27352afc831bef114ed7cfc5cdb33099bdfbe8d
+Author: tisanyay <brendentay@gmail.com>
+Date:   Thu Sep 24 23:52:39 2026 +0800
+
+    copied over file
