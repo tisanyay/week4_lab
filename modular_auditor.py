@@ -15,24 +15,26 @@ def iterate_checks(list_of_checks, num):
             return False
     return True
 
-def generate_report(units_processed, failed_entry_count):
-    print("Total units processed:", units_processed)
-    print("Number of failed/rejected entries:", failed_entry_count)
+def generate_report(data):
+    print("\n" + "Current Orders:" + "\n")
+    for i, item in enumerate(data):
+        print(str(i+1) + ": "+ str(item["id"]) + ", " + item["name"] + ", " + str(item["qty"]))
+    print()
 
 def get_valid_product_input(valid_product_dict):
     valid_product_dict_lower = {k.lower():v for k, v in valid_product_dict.items()}
-    text_input = input("Enter Product Name: ").lower()
+    text_input = input("Enter Product Name: ").lower().strip()
 
     if text_input == "quit":
         return 0, 0
 
-    if text_input not in valid_product_dict_lower:
-        print("Not a valid product!\n")
-        return get_valid_product_input(valid_product_dict_lower)
+    for key, value in valid_product_dict.items():
+        if text_input != key.lower():
+            continue
+        return key, str(value)
 
-    product_id = valid_product_dict_lower[text_input]
-    
-    return product_id, text_input
+    print("Item does not exist!\n")
+    return get_valid_product_input(valid_product_dict)
 
 def get_valid_stock_input():
     command = input("Enter Quantity: ")
@@ -70,6 +72,8 @@ def save_inventory(data, filename):
     with open(filename, "w+") as f:
             json.dump(data, f)
 
+    print("Orders successfully saved to inventory.json")
+
 def construct_item_dict(id, name, qty):
     return {
             "id": id,
@@ -94,6 +98,7 @@ valid_product_dict = {
 print("SMART AUDITOR PROGRAM!!!!")
 
 data = load_inventory(inventory_file)
+generate_report(data)
 
 while True:
     product_id, user_product_input = get_valid_product_input(valid_product_dict)
@@ -115,8 +120,7 @@ while True:
         break 
      
     data.append(construct_item_dict(product_id, user_product_input, user_qty_input))
-    print("\nNew Order Added:\n" + str(product_id) + ", " + user_product_input + ", " + str(user_qty_input)) 
+    print("\nNew Order Added:\n" + str(product_id) + ", " + user_product_input + ", " + str(user_qty_input) + "\n") 
 
 save_inventory(data, inventory_file)
-generate_report(inventory, failed_entry_count)
-print(revenue)
+generate_report(data)
